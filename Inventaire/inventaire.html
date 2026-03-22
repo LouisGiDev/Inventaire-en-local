@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Inventaire Parc Info</title>
+    
+    <style>
+        :root {
+            /* Couleurs principales */
+            --couleur-primaire: #2b2da1;
+            --couleur-secondaire: #23036d;
+            --couleur-accent: #adadad;
+            --couleur-succes: #10b981;
+            --couleur-warning: #f59e0b;
+            --couleur-erreur: #ef4444;
+            --couleur-info: #05768a;
+            
+            /* Fond */
+            --fond-primaire: linear-gradient(135deg, #05219e 0%, #e1dce6 100%);
+            --fond-carte: #ffffff;
+            --fond-hover: #f8fafc;
+            
+            /* Texte */
+            --texte-primaire: #1e293b;
+            --texte-secondaire: #64748b;
+            --texte-blanc: #ffffff;
+            
+            /* Bordures */
+            --bordure-couleur: #e2e8f0;
+            --bordure-focus: var(--couleur-primaire);
+            
+            /* Ombres */
+            --ombre-carte: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --ombre-hover: 0 20px 40px rgba(0, 0, 0, 0.15);
+            
+            /* Espacements */
+            --espacement-xs: 8px;
+            --espacement-sm: 12px;
+            --espacement-md: 16px;
+            --espacement-lg: 24px;
+            --espacement-xl: 32px;
+            
+            /* Rayons */
+            --rayon-sm: 8px;
+            --rayon-md: 12px;
+            --rayon-lg: 16px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--fond-primaire);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--texte-primaire);
+        }
+        
+        .conteneur {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        .entete {
+            text-align: center;
+            margin-bottom: var(--espacement-xl);
+        }
+        
+        .titre-principal {
+            color: var(--texte-blanc);
+            font-size: clamp(2em, 5vw, 3em);
+            font-weight: 700;
+            margin-bottom: var(--espacement-sm);
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        .section-upload {
+            background: var(--fond-carte);
+            padding: var(--espacement-xl);
+            border-radius: var(--rayon-lg);
+            box-shadow: var(--ombre-carte);
+            margin-bottom: var(--espacement-lg);
+            text-align: center;
+        }
+        
+        .bouton-upload {
+            display: inline-block;
+            padding: var(--espacement-md) var(--espacement-xl);
+            background: linear-gradient(135deg, var(--couleur-primaire), var(--couleur-secondaire));
+            color: var(--texte-blanc);
+            border-radius: var(--rayon-md);
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+        
+        .bouton-upload:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(99, 102, 241, 0.4);
+        }
+        
+        input[type="file"] {
+            display: none;
+        }
+        
+        .grille-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--espacement-lg);
+            margin-bottom: var(--espacement-lg);
+        }
+        
+        .carte-stat {
+            background: var(--fond-carte);
+            padding: var(--espacement-lg);
+            border-radius: var(--rayon-lg);
+            box-shadow: var(--ombre-carte);
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .carte-stat:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--ombre-hover);
+            border-color: var(--couleur-primaire);
+        }
+        
+        .carte-stat h3 {
+            color: var(--texte-secondaire);
+            margin-bottom: var(--espacement-sm);
+            font-size: 0.95em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+        
+        .carte-stat .nombre {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: var(--couleur-primaire);
+        }
+        
+        .controles {
+            background: var(--fond-carte);
+            padding: var(--espacement-xl);
+            border-radius: var(--rayon-lg);
+            box-shadow: var(--ombre-carte);
+            margin-bottom: var(--espacement-lg);
+        }
+        
+        .barre-recherche {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--espacement-md);
+            margin-bottom: var(--espacement-lg);
+        }
+        
+        input, select {
+            padding: var(--espacement-sm) var(--espacement-md);
+            border: 2px solid var(--bordure-couleur);
+            border-radius: var(--rayon-sm);
+            font-size: 1em;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: var(--fond-carte);
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--bordure-focus);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        
+        .groupe-boutons {
+            display: flex;
+            gap: var(--espacement-md);
+            flex-wrap: wrap;
+        }
+        
+        .bouton {
+            padding: var(--espacement-sm) var(--espacement-lg);
+            border: none;
+            border-radius: var(--rayon-sm);
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        
+        .bouton-primaire {
+            background: linear-gradient(135deg, var(--couleur-primaire), var(--couleur-secondaire));
+            color: var(--texte-blanc);
+        }
+        
+        .bouton-primaire:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(99, 102, 241, 0.4);
+        }
+        
+        .bouton-secondaire {
+            background: var(--texte-secondaire);
+            color: var(--texte-blanc);
+        }
+        
+        .bouton-secondaire:hover {
+            background: var(--texte-primaire);
+            transform: translateY(-2px);
+        }
+        
+        .bouton-danger {
+            background: var(--couleur-erreur);
+            color: var(--texte-blanc);
+        }
+        
+        .bouton-danger:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+        
+        .conteneur-tableau {
+            background: var(--fond-carte);
+            padding: var(--espacement-xl);
+            border-radius: var(--rayon-lg);
+            box-shadow: var(--ombre-carte);
+            overflow-x: auto;
+        }
+        
+        .entete-tableau {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--espacement-lg);
+            flex-wrap: wrap;
+            gap: var(--espacement-md);
+        }
+        
+        .entete-tableau h2 {
+            color: var(--texte-primaire);
+            font-size: 1.5em;
+        }
+        
+        .compteur-resultats {
+            color: var(--couleur-primaire);
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            background: linear-gradient(135deg, var(--couleur-primaire), var(--couleur-secondaire));
+            color: var(--texte-blanc);
+            padding: var(--espacement-md);
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            white-space: nowrap;
+        }
+        
+        td {
+            padding: var(--espacement-md);
+            border-bottom: 1px solid var(--bordure-couleur);
+        }
+        
+        tbody tr {
+            transition: background 0.2s ease;
+        }
+        
+        tbody tr:hover {
+            background: var(--fond-hover);
+        }
+        
+        .badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .badge-neuf { background: var(--couleur-succes); color: white; }
+        .badge-bon { background: var(--couleur-info); color: white; }
+        .badge-moyen { background: var(--couleur-warning); color: white; }
+        .badge-reparer { background: var(--couleur-erreur); color: white; }
+        .badge-defaut { background: var(--texte-secondaire); color: white; }
+        
+        .bouton-supprimer {
+            padding: 8px 16px;
+            background: var(--couleur-erreur);
+            color: white;
+            border: none;
+            border-radius: var(--rayon-sm);
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .bouton-supprimer:hover {
+            background: #dc2626;
+            transform: scale(1.05);
+        }
+        
+        .etat-vide {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--texte-secondaire);
+        }
+        
+        .etat-vide svg {
+            width: 100px;
+            height: 100px;
+            margin-bottom: var(--espacement-lg);
+            opacity: 0.3;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.actif {
+            display: flex;
+        }
+        
+        .contenu-modal {
+            background: var(--fond-carte);
+            padding: var(--espacement-xl);
+            border-radius: var(--rayon-lg);
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: apparition 0.3s ease;
+        }
+        
+        @keyframes apparition {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .titre-modal {
+            font-size: 1.5em;
+            margin-bottom: var(--espacement-md);
+            color: var(--texte-primaire);
+        }
+        
+        .actions-modal {
+            display: flex;
+            gap: var(--espacement-md);
+            margin-top: var(--espacement-lg);
+        }
+        
+        @media (max-width: 768px) {
+            .titre-principal {
+                font-size: 2em;
+            }
+            
+            .barre-recherche {
+                grid-template-columns: 1fr;
+            }
+            
+            table {
+                font-size: 0.85em;
+            }
+            
+            th, td {
+                padding: var(--espacement-sm);
+            }
+            
+            .entete-tableau {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        /* Pagination */
+        .pagination-ui {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--espacement-md);
+            margin: calc(var(--espacement-md) * 0.5) 0 var(--espacement-lg);
+        }
+        
+        .pagination-ui button {
+            white-space: nowrap;
+        }
+
+        /* Tri - headers cliquables */
+        th.sortable {
+            cursor: pointer;
+        }
+
+        th.sortable:hover {
+            filter: brightness(1.03);
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: 22px;
+            transform: translateX(-50%) translateY(10px);
+            background: rgba(15, 23, 42, 0.95);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 12px;
+            box-shadow: 0 15px 45px rgba(0,0,0,0.35);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            z-index: 2000;
+            max-width: min(720px, 92vw);
+            font-size: 0.98em;
+        }
+
+        .toast.visible {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Drag & Drop */
+        .section-upload.dragover {
+            outline: 3px dashed rgba(236, 72, 153, 0.7);
+            outline-offset: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div class="conteneur">
+        <header class="entete">
+            <h1 class="titre-principal">Inventaire Parc Informatique</h1>
+        </header>
+        
+        <div class="section-upload">
+            <label for="fichierCsv" class="bouton-upload">
+                Charger le fichier CSV
+            </label>
+            <input type="file" id="fichierCsv" accept=".csv">
+            <p id="pFichierInfo" style="margin-top: 15px; color: var(--texte-secondaire);">
+                Selectionnez votre fichier inventaire au format CSV
+            </p>
+        </div>
+        
+        <div id="sectionStats" class="grille-stats" style="display: none;"></div>
+        
+        <div id="sectionControles" class="controles" style="display: none;">
+            <div class="barre-recherche">
+                <input type="text" id="rechercheGlobale" placeholder="Recherche globale...">
+                <input type="text" id="rechercheCode" placeholder="Code-barres...">
+                <select id="filtreEtat">
+                    <option value="">Tous les etats</option>
+                    <option value="Neuf">Neuf</option>
+                    <option value="Bon">Bon</option>
+                    <option value="Moyen">Moyen</option>
+                    <option value="A reparer">A reparer</option>
+                </select>
+                <select id="filtreType">
+                    <option value="">Tous les types</option>
+                </select>
+                <input type="text" id="filtreLoc" placeholder="Localisation...">
+                <select id="triColonne" title="Trier par colonne">
+                    <option value="code_barre" selected>Tri: Code-barres</option>
+                    <option value="type">Tri: Type</option>
+                    <option value="marque">Tri: Marque</option>
+                    <option value="modele">Tri: Modèle</option>
+                    <option value="numero_serie">Tri: N° Série</option>
+                    <option value="etat">Tri: Etat</option>
+                    <option value="localisation">Tri: Localisation</option>
+                    <option value="utilisateur">Tri: Utilisateur</option>
+                    <option value="date_ajout">Tri: Date ajout</option>
+                    <option value="commentaire">Tri: Commentaire</option>
+                </select>
+                <select id="triOrdre" title="Ordre de tri">
+                    <option value="asc" selected>Ascendant</option>
+                    <option value="desc">Descendant</option>
+                </select>
+                <select id="taillePage" title="Taille de page">
+                    <option value="10">10 / page</option>
+                    <option value="25" selected>25 / page</option>
+                    <option value="50">50 / page</option>
+                    <option value="100">100 / page</option>
+                </select>
+            </div>
+            <div class="groupe-boutons">
+                <button class="bouton bouton-primaire" onclick="appliquerFiltres()">Rechercher</button>
+                <button class="bouton bouton-secondaire" onclick="reinitialiserFiltres()">Reinitialiser</button>
+                <button class="bouton bouton-secondaire" onclick="exporterCSV()">Exporter</button>
+                <button class="bouton bouton-danger" onclick="confirmerSupprimerTout()">Tout supprimer</button>
+            </div>
+        </div>
+        
+        <div id="sectionTableau" class="conteneur-tableau" style="display: none;">
+            <div class="entete-tableau">
+                <h2>Resultats</h2>
+                <span id="compteurResultats" class="compteur-resultats"></span>
+            </div>
+            <div class="pagination-ui">
+                <button class="bouton bouton-secondaire" id="btnPrev" onclick="changerPage(-1)" disabled>Précédent</button>
+                <span id="pageInfo" class="compteur-resultats"></span>
+                <button class="bouton bouton-secondaire" id="btnNext" onclick="changerPage(1)" disabled>Suivant</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th data-field="code_barre" class="sortable">Code-barres</th>
+                        <th data-field="type" class="sortable">Type</th>
+                        <th data-field="marque" class="sortable">Marque</th>
+                        <th data-field="modele" class="sortable">Modele</th>
+                        <th data-field="numero_serie" class="sortable">N° Serie</th>
+                        <th data-field="etat" class="sortable">Etat</th>
+                        <th data-field="localisation" class="sortable">Localisation</th>
+                        <th data-field="utilisateur" class="sortable">Utilisateur</th>
+                        <th data-field="date_ajout" class="sortable">Date ajout</th>
+                        <th data-field="commentaire" class="sortable">Commentaire</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="corpsTableau"></tbody>
+            </table>
+        </div>
+
+        <!-- Toast léger (notifications) -->
+        <div id="toast" class="toast" aria-live="polite"></div>
+    </div>
+
+    <!-- Modal de confirmation -->
+    <div id="modalConfirmation" class="modal">
+        <div class="contenu-modal">
+            <h3 class="titre-modal">Confirmation</h3>
+            <p id="messageModal" style="color: var(--texte-secondaire); margin-bottom: var(--espacement-lg);"></p>
+            <div class="actions-modal">
+                <button class="bouton bouton-danger" onclick="confirmerAction()">Confirmer</button>
+                <button class="bouton bouton-secondaire" onclick="fermerModal()">Annuler</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let inventaire = [];
+        let inventaireFiltre = [];
+        let actionEnCours = null;
+
+        // Etat UI (tri + pagination)
+        let sortKey = document.getElementById('triColonne')?.value || 'code_barre';
+        let sortDir = document.getElementById('triOrdre')?.value || 'asc';
+        let pageSize = parseInt(document.getElementById('taillePage')?.value || '25', 10);
+        let currentPage = 1;
+
+        function echapperHTML(s) {
+            const str = s === null || s === undefined ? '' : String(s);
+            return str
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            if (!toast) return;
+            toast.textContent = message;
+            toast.classList.add('visible');
+            window.clearTimeout(showToast._t);
+            showToast._t = window.setTimeout(() => toast.classList.remove('visible'), 2400);
+        }
+
+        function parseDateFrancaise(s) {
+            if (!s) return null;
+            const m = String(s).trim().match(/^(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2})$/);
+            if (!m) return null;
+            const d = new Date(Number(m[3]), Number(m[2]) - 1, Number(m[1]), Number(m[4]), Number(m[5]));
+            return isNaN(d.getTime()) ? null : d;
+        }
+
+        function mettreIndicateurTri() {
+            const champs = document.querySelectorAll('th.sortable');
+            champs.forEach(th => {
+                const base = th.dataset.baseLabel || th.textContent.trim();
+                if (!th.dataset.baseLabel) th.dataset.baseLabel = base.replace(/(▲|▼)$/g, '').trim();
+                const key = th.dataset.field;
+                let suffix = '';
+                if (key === sortKey) suffix = sortDir === 'asc' ? ' ▲' : ' ▼';
+                th.textContent = th.dataset.baseLabel + suffix;
+            });
+        }
+
+        function comparer(a, b) {
+            const va = a?.[sortKey];
+            const vb = b?.[sortKey];
+
+            if (sortKey === 'date_ajout') {
+                const da = parseDateFrancaise(va);
+                const db = parseDateFrancaise(vb);
+                const ta = da ? da.getTime() : -Infinity;
+                const tb = db ? db.getTime() : -Infinity;
+                return sortDir === 'asc' ? ta - tb : tb - ta;
+            }
+
+            const sa = (va === null || va === undefined) ? '' : String(va).toLowerCase();
+            const sb = (vb === null || vb === undefined) ? '' : String(vb).toLowerCase();
+            if (sa < sb) return sortDir === 'asc' ? -1 : 1;
+            if (sa > sb) return sortDir === 'asc' ? 1 : -1;
+            return 0;
+        }
+
+        function appliquerTri(data) {
+            const copie = [...data];
+            copie.sort((x, y) => comparer(x, y));
+            return copie;
+        }
+
+        function changerPage(delta) {
+            const total = inventaireFiltre.length;
+            const totalPages = pageSize > 0 ? Math.max(1, Math.ceil(total / pageSize)) : 1;
+            currentPage = Math.min(totalPages, Math.max(1, currentPage + delta));
+            afficherTableau(inventaireFiltre);
+        }
+
+        document.getElementById('fichierCsv').addEventListener('change', function(e) {
+            const fichier = e.target.files[0];
+            if (!fichier) return;
+            
+            const lecteur = new FileReader();
+            lecteur.onload = function(event) {
+                const csv = event.target.result;
+                parserCSV(csv);
+                const p = document.getElementById('pFichierInfo');
+                if (p) p.textContent = `Fichier chargé: ${fichier.name}`;
+                showToast(`Import OK: ${inventaire.length} éléments`);
+            };
+            lecteur.readAsText(fichier, 'UTF-8');
+        });
+
+        // Drag & Drop CSV (100% local)
+        const zoneUpload = document.querySelector('.section-upload');
+        const inputCsv = document.getElementById('fichierCsv');
+        if (zoneUpload && inputCsv) {
+            zoneUpload.addEventListener('dragover', (ev) => {
+                ev.preventDefault();
+                zoneUpload.classList.add('dragover');
+            });
+            zoneUpload.addEventListener('dragleave', () => {
+                zoneUpload.classList.remove('dragover');
+            });
+            zoneUpload.addEventListener('drop', (ev) => {
+                ev.preventDefault();
+                zoneUpload.classList.remove('dragover');
+                const fichier = ev.dataTransfer.files && ev.dataTransfer.files[0];
+                if (!fichier) return;
+                const lecteur = new FileReader();
+                lecteur.onload = function(event) {
+                    const csv = event.target.result;
+                    parserCSV(csv);
+                    const p = document.getElementById('pFichierInfo');
+                    if (p) p.textContent = `Fichier chargé: ${fichier.name}`;
+                    showToast(`Import OK: ${inventaire.length} éléments`);
+                };
+                lecteur.readAsText(fichier, 'UTF-8');
+                inputCsv.value = '';
+            });
+        }
+        
+        function parserCSV(csv) {
+            const texte = String(csv).replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+            const lignes = texte.split('\n');
+            inventaire = [];
+
+            // Détection simple du séparateur (CSV Excel FR = souvent ';')
+            const headerCandidate = lignes.find(l => l && l.trim()) || '';
+            const cleanHeader = headerCandidate.replace(/\uFEFF/g, '').trim();
+            const commaCount = (cleanHeader.match(/,/g) || []).length;
+            const semiCount = (cleanHeader.match(/;/g) || []).length;
+            const delimiter = semiCount > commaCount ? ';' : ',';
+
+            // Si la 1ere ligne ressemble à un en-tete, on saute celle-ci
+            const firstCols = parserLigneCSV(cleanHeader, delimiter);
+            const firstColLower = (firstCols[0] || '').toLowerCase();
+            const isHeader = firstColLower.includes('code') && firstColLower.includes('bar');
+            const startIndex = isHeader ? 1 : 0;
+            
+            for (let i = startIndex; i < lignes.length; i++) {
+                const ligne = lignes[i].trim();
+                if (!ligne) continue;
+                
+                const colonnes = parserLigneCSV(ligne, delimiter);
+                
+                if (colonnes[0]) {
+                    inventaire.push({
+                        id: Date.now() + i,
+                        code_barre: colonnes[0] || '',
+                        type: colonnes[1] || '',
+                        marque: colonnes[2] || '',
+                        modele: colonnes[3] || '',
+                        numero_serie: colonnes[4] || '',
+                        etat: colonnes[5] || '',
+                        localisation: colonnes[6] || '',
+                        utilisateur: colonnes[7] || '',
+                        date_ajout: colonnes[8] || '',
+                        commentaire: colonnes[9] || ''
+                    });
+                }
+            }
+            
+            inventaireFiltre = [...inventaire];
+            initialiserInterface();
+        }
+        
+        function parserLigneCSV(ligne, delimiter) {
+            const resultat = [];
+            let actuel = '';
+            let dansGuillemets = false;
+            
+            const sep = delimiter || ',';
+            for (let i = 0; i < ligne.length; i++) {
+                const char = ligne[i];
+                
+                if (char === '"') {
+                    // CSV: dans un champ entre guillemets, les guillemets internes sont doublés: ""
+                    if (dansGuillemets && ligne[i + 1] === '"') {
+                        actuel += '"';
+                        i++; // on consomme le guillemet suivant
+                    } else {
+                        dansGuillemets = !dansGuillemets;
+                    }
+                } else if (char === sep && !dansGuillemets) {
+                    resultat.push(actuel.trim());
+                    actuel = '';
+                } else {
+                    actuel += char;
+                }
+            }
+            resultat.push(actuel.trim());
+            
+            return resultat;
+        }
+        
+        function initialiserInterface() {
+            document.getElementById('sectionStats').style.display = 'grid';
+            document.getElementById('sectionControles').style.display = 'block';
+            document.getElementById('sectionTableau').style.display = 'block';
+
+            sortKey = document.getElementById('triColonne')?.value || 'code_barre';
+            sortDir = document.getElementById('triOrdre')?.value || 'asc';
+            pageSize = parseInt(document.getElementById('taillePage')?.value || '25', 10);
+            currentPage = 1;
+
+            calculerStats();
+            remplirFiltreType();
+            mettreIndicateurTri();
+            afficherTableau(inventaireFiltre);
+        }
+        
+        function calculerStats() {
+            const stats = {
+                total: inventaire.length,
+                parEtat: {}
+            };
+            
+            inventaire.forEach(item => {
+                const etat = item.etat || 'Non defini';
+                stats.parEtat[etat] = (stats.parEtat[etat] || 0) + 1;
+            });
+            
+            afficherStats(stats);
+        }
+        
+        function afficherStats(stats) {
+            const div = document.getElementById('sectionStats');
+            let html = `
+                <div class="carte-stat">
+                    <h3>Total</h3>
+                    <div class="nombre">${stats.total}</div>
+                </div>
+            `;
+            
+            Object.entries(stats.parEtat).forEach(([etat, compteur]) => {
+                html += `
+                    <div class="carte-stat">
+                        <h3>${etat}</h3>
+                        <div class="nombre">${compteur}</div>
+                    </div>
+                `;
+            });
+            
+            div.innerHTML = html;
+        }
+        
+        function remplirFiltreType() {
+            const select = document.getElementById('filtreType');
+            // Reset pour éviter les doublons après plusieurs refresh
+            select.innerHTML = '<option value="">Tous les types</option>';
+            const types = [...new Set(inventaire.map(i => i.type))].filter(t => t);
+            
+            types.forEach(type => {
+                const option = document.createElement('option');
+                option.value = type;
+                option.textContent = type;
+                select.appendChild(option);
+            });
+        }
+        
+        function afficherTableau(data) {
+            const tbody = document.getElementById('corpsTableau');
+            const compteur = document.getElementById('compteurResultats');
+            const pageInfo = document.getElementById('pageInfo');
+            const btnPrev = document.getElementById('btnPrev');
+            const btnNext = document.getElementById('btnNext');
+            
+            compteur.textContent = `${data.length} resultats`;
+            
+            if (!data || data.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="11" class="etat-vide">
+                            <div>Aucun resultat trouve</div>
+                        </td>
+                    </tr>
+                `;
+                if (pageInfo) pageInfo.textContent = '';
+                if (btnPrev) btnPrev.disabled = true;
+                if (btnNext) btnNext.disabled = true;
+                return;
+            }
+
+            const tri = appliquerTri(data);
+            const total = tri.length;
+            const totalPages = pageSize > 0 ? Math.max(1, Math.ceil(total / pageSize)) : 1;
+            currentPage = Math.min(totalPages, Math.max(1, currentPage));
+
+            const debut = (currentPage - 1) * pageSize;
+            const fin = debut + pageSize;
+            const pageData = tri.slice(debut, fin);
+
+            if (pageInfo) pageInfo.textContent = `Page ${currentPage} / ${totalPages}`;
+            if (btnPrev) btnPrev.disabled = currentPage <= 1;
+            if (btnNext) btnNext.disabled = currentPage >= totalPages;
+
+            tbody.innerHTML = pageData.map(item => `
+                <tr>
+                    <td><strong>${echapperHTML(item.code_barre)}</strong></td>
+                    <td>${echapperHTML(item.type)}</td>
+                    <td>${echapperHTML(item.marque)}</td>
+                    <td>${echapperHTML(item.modele)}</td>
+                    <td>${echapperHTML(item.numero_serie || '-')}</td>
+                    <td>${obtenirBadgeEtat(item.etat)}</td>
+                    <td>${echapperHTML(item.localisation)}</td>
+                    <td>${echapperHTML(item.utilisateur || '-')}</td>
+                    <td>${echapperHTML(item.date_ajout)}</td>
+                    <td>${echapperHTML(item.commentaire || '-')}</td>
+                    <td>
+                        <button class="bouton-supprimer" onclick="confirmerSupprimer(${item.id})">
+                            Supprimer
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        function obtenirBadgeEtat(etat) {
+            const classes = {
+                'Neuf': 'badge-neuf',
+                'Bon': 'badge-bon',
+                'Moyen': 'badge-moyen',
+                'A reparer': 'badge-reparer'
+            };
+            
+            const nomClasse = classes[etat] || 'badge-defaut';
+            const label = echapperHTML(etat || 'N/A');
+            return `<span class="badge ${nomClasse}">${label}</span>`;
+        }
+        
+        function appliquerFiltres() {
+            const rechercheGlobale = document.getElementById('rechercheGlobale').value.toLowerCase();
+            const rechercheCode = document.getElementById('rechercheCode').value.toUpperCase();
+            const filtreEtat = document.getElementById('filtreEtat').value;
+            const filtreType = document.getElementById('filtreType').value;
+            const filtreLoc = document.getElementById('filtreLoc').value.toLowerCase();
+            
+            inventaireFiltre = inventaire.filter(item => {
+                if (rechercheGlobale) {
+                    const combine = Object.values(item).join(' ').toLowerCase();
+                    if (!combine.includes(rechercheGlobale)) return false;
+                }
+                
+                if (rechercheCode && !item.code_barre.toUpperCase().includes(rechercheCode)) {
+                    return false;
+                }
+                
+                if (filtreEtat && item.etat !== filtreEtat) {
+                    return false;
+                }
+                
+                if (filtreType && item.type !== filtreType) {
+                    return false;
+                }
+                
+                if (filtreLoc && !item.localisation.toLowerCase().includes(filtreLoc)) {
+                    return false;
+                }
+                
+                return true;
+            });
+            currentPage = 1;
+            afficherTableau(inventaireFiltre);
+        }
+        
+        function reinitialiserFiltres() {
+            document.getElementById('rechercheGlobale').value = '';
+            document.getElementById('rechercheCode').value = '';
+            document.getElementById('filtreEtat').value = '';
+            document.getElementById('filtreType').value = '';
+            document.getElementById('filtreLoc').value = '';
+            
+            inventaireFiltre = [...inventaire];
+            currentPage = 1;
+            afficherTableau(inventaireFiltre);
+        }
+        
+        function exporterCSV() {
+            // On exporte l'inventaire complet (pas seulement filtré),
+            // pour éviter de supprimer accidentellement des lignes côté Excel lors du sync.
+            // Cas "tout supprimer": on exporte quand meme un CSV avec uniquement l'entete,
+            // pour permettre ensuite au script de sync de vider Excel.
+            
+            const entete = ['Code-barres', 'Type', 'Marque', 'Modele', 'N° Serie', 'Etat', 'Localisation', 'Utilisateur', 'Date ajout', 'Commentaire'];
+            const lignes = inventaire.map(item => [
+                item.code_barre,
+                item.type,
+                item.marque,
+                item.modele,
+                item.numero_serie,
+                item.etat,
+                item.localisation,
+                item.utilisateur,
+                item.date_ajout,
+                item.commentaire
+            ]);
+
+            function echapperCSV(cell) {
+                const s = cell === null || cell === undefined ? '' : String(cell);
+                const mustQuote = s.includes(',') || s.includes('\n') || s.includes('"');
+                const escaped = s.replace(/"/g, '""');
+                return mustQuote ? `"${escaped}"` : escaped;
+            }
+
+            const csv = [entete, ...lignes]
+                .map(ligne => ligne.map(echapperCSV).join(','))
+                .join('\n');
+            
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const lien = document.createElement('a');
+            lien.href = URL.createObjectURL(blob);
+            lien.download = `inventaire_export_${new Date().getTime()}.csv`;
+            lien.click();
+            showToast('CSV téléchargé');
+        }
+        
+        function confirmerSupprimer(id) {
+            actionEnCours = { type: 'supprimer', id: id };
+            document.getElementById('messageModal').textContent = 'Etes-vous sur de vouloir supprimer cet element ?';
+            document.getElementById('modalConfirmation').classList.add('actif');
+        }
+        
+        function confirmerSupprimerTout() {
+            actionEnCours = { type: 'supprimerTout' };
+            document.getElementById('messageModal').textContent = `Etes-vous sur de vouloir supprimer tous les ${inventaire.length} elements ?`;
+            document.getElementById('modalConfirmation').classList.add('actif');
+        }
+        
+        function confirmerAction() {
+            if (!actionEnCours) return;
+
+            if (actionEnCours.type === 'supprimer') {
+                inventaire = inventaire.filter(item => item.id !== actionEnCours.id);
+                inventaireFiltre = inventaireFiltre.filter(item => item.id !== actionEnCours.id);
+            } else if (actionEnCours.type === 'supprimerTout') {
+                inventaire = [];
+                inventaireFiltre = [];
+            }
+            
+            calculerStats();
+            afficherTableau(inventaireFiltre);
+            fermerModal();
+        }
+        
+        function fermerModal() {
+            document.getElementById('modalConfirmation').classList.remove('actif');
+            actionEnCours = null;
+        }
+        
+        document.getElementById('rechercheGlobale').addEventListener('input', () => {
+            setTimeout(appliquerFiltres, 300);
+        });
+        
+        document.getElementById('rechercheCode').addEventListener('input', () => {
+            setTimeout(appliquerFiltres, 300);
+        });
+
+        // Filtres: recalcul dès que possible
+        document.getElementById('filtreEtat').addEventListener('change', () => {
+            currentPage = 1;
+            appliquerFiltres();
+        });
+        document.getElementById('filtreType').addEventListener('change', () => {
+            currentPage = 1;
+            appliquerFiltres();
+        });
+        document.getElementById('filtreLoc').addEventListener('input', () => {
+            setTimeout(appliquerFiltres, 300);
+        });
+
+        // Tri & pagination
+        document.getElementById('triColonne').addEventListener('change', () => {
+            sortKey = document.getElementById('triColonne').value;
+            mettreIndicateurTri();
+            afficherTableau(inventaireFiltre);
+        });
+        document.getElementById('triOrdre').addEventListener('change', () => {
+            sortDir = document.getElementById('triOrdre').value;
+            mettreIndicateurTri();
+            afficherTableau(inventaireFiltre);
+        });
+        document.getElementById('taillePage').addEventListener('change', () => {
+            pageSize = parseInt(document.getElementById('taillePage').value || '25', 10);
+            currentPage = 1;
+            afficherTableau(inventaireFiltre);
+        });
+
+        // Tri par clic sur les en-tetes
+        document.querySelectorAll('th.sortable').forEach(th => {
+            th.addEventListener('click', () => {
+                const key = th.dataset.field;
+                if (!key) return;
+                const triSelect = document.getElementById('triColonne');
+                const ordreSelect = document.getElementById('triOrdre');
+                if (triSelect.value === key) {
+                    ordreSelect.value = ordreSelect.value === 'asc' ? 'desc' : 'asc';
+                } else {
+                    triSelect.value = key;
+                    ordreSelect.value = 'asc';
+                }
+                sortKey = triSelect.value;
+                sortDir = ordreSelect.value;
+                mettreIndicateurTri();
+                currentPage = 1;
+                afficherTableau(inventaireFiltre);
+            });
+        });
+    </script>
+</body>
+</html>
